@@ -1,0 +1,51 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+brief: |
+  Compare the ${../glossary/thread:/term} identifiers specified by
+  ${.:/params[0]/name} and ${.:/params[1]/name}.
+copyrights:
+- Copyright (C) 2026 OHB System AG
+- Copyright (C) 2026 embedded brains GmbH & Co. KG
+definition:
+  default:
+    attributes: null
+    body: null
+    params:
+    - ${/c/if/pthread_t:/name} ${.:/params[0]/name}
+    - ${/c/if/pthread_t:/name} ${.:/params[1]/name}
+    return: int
+  variants: []
+description: null
+enabled-by: true
+index-entries: []
+interface-type: function
+links:
+- role: interface-placement
+  uid: header
+- role: interface-ingroup
+  uid: group
+- role: constraint
+  uid: ../constraint/thread-id-valid
+- role: reference
+  uid: /ref/std/posix-2024/pthread-equal
+name: pthread_equal
+notes: |
+  See ${/ref/std/posix-2024/pthread-equal:/name}.
+
+  ${/ref/std/posix-2024/pthread-equal:/name} also defines the result for a
+  parameter equal to `PTHREAD_NULL`. RTEMS and Newlib do not define
+  `PTHREAD_NULL`, so the function supports only valid thread identifiers.
+params:
+- description: |
+    is the first ${../glossary/thread:/term} identifier to compare.
+  dir: null
+  name: t1
+- description: |
+    is the second ${../glossary/thread:/term} identifier to compare.
+  dir: null
+  name: t2
+return:
+  return: |
+    Returns a non-zero value, if ${.:/params[0]/name} and ${.:/params[1]/name}
+    identify the same ${../glossary/thread:/term}, otherwise zero.
+  return-values: []
+type: interface

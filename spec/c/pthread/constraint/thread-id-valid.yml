@@ -1,0 +1,16 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+copyrights:
+- Copyright (C) 2026 OHB System AG
+enabled-by: true
+links:
+- role: requirement-refinement
+  uid: /req/usage-constraints
+rationale: |
+  ${/ref/std/posix-2024/pthread-equal:/name} leaves the behaviour undefined if a
+  parameter is not a valid thread identifier and is not equal to `PTHREAD_NULL`.
+  RTEMS and Newlib do not define `PTHREAD_NULL`. The lifetime of a thread
+  identifier ends when the terminated thread is joined or detached, so the
+  identifier of a terminated thread which waits for its join is still valid.
+text: |
+  Each thread identifier parameter shall be a valid thread identifier.
+type: constraint

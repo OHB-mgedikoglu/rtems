@@ -1,0 +1,154 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+copyrights:
+- Copyright (C) 2026 OHB System AG
+- Copyright (C) 2026 embedded brains GmbH & Co. KG
+enabled-by: true
+functional-type: action
+links:
+- role: interface-function
+  uid: ../if/equal
+- role: requirement-refinement
+  uid: ../../req/group-posix-api
+- role: reference
+  uid: /ref/std/posix-2024/pthread-equal
+post-conditions:
+- name: Status
+  states:
+  - name: NonZero
+    test-code: |
+      T_ne_int( ctx->status, 0 );
+    text: |
+      The ${/glossary/returnvalue:/term} of ${../if/equal:/name} shall be a value
+      other than zero.
+  - name: Zero
+    test-code: |
+      T_eq_int( ctx->status, 0 );
+    text: |
+      The ${/glossary/returnvalue:/term} of ${../if/equal:/name} shall be zero.
+  test-epilogue: null
+  test-prologue: null
+pre-conditions:
+- name: T1
+  states:
+  - name: Self
+    test-code: |
+      ctx->t1 = pthread_self();
+      ctx->other = ctx->worker_id;
+    text: |
+      While the ${../if/equal:/params[0]/name} parameter identifies the calling
+      ${../glossary/thread:/term}.
+  - name: Other
+    test-code: |
+      ctx->t1 = ctx->worker_id;
+      ctx->other = pthread_self();
+    text: |
+      While the ${../if/equal:/params[0]/name} parameter identifies a
+      ${../glossary/thread:/term} other than the calling ${../glossary/thread:/term}.
+  test-epilogue: null
+  test-prologue: null
+- name: T2
+  states:
+  - name: Same
+    test-code: |
+      ctx->t2 = ctx->t1;
+    text: |
+      While the ${../if/equal:/params[1]/name} parameter identifies the
+      ${../glossary/thread:/term} identified by the ${../if/equal:/params[0]/name}
+      parameter.
+  - name: Different
+    test-code: |
+      ctx->t2 = ctx->other;
+    text: |
+      While the ${../if/equal:/params[1]/name} parameter identifies a
+      ${../glossary/thread:/term} other than the ${../glossary/thread:/term}
+      identified by the ${../if/equal:/params[0]/name} parameter.
+  test-epilogue: null
+  test-prologue: null
+rationale: |
+  ${/ref/std/posix-2024/pthread-equal:/name} requires a non-zero value for two
+  identifiers of the same ${../glossary/thread:/term} and zero otherwise. It
+  defines no error and leaves the behaviour undefined if a parameter is not a
+  valid thread identifier and is not equal to `PTHREAD_NULL`, so this case is a
+  constraint of the interface and not a state. RTEMS and Newlib do not define
+  `PTHREAD_NULL`, see the notes of ${../if/equal:/name}.
+
+  Pre-condition T1 covers the calling ${../glossary/thread:/term} and another
+  ${../glossary/thread:/term}, so the result does not depend on the identifier of
+  the calling ${../glossary/thread:/term}. The other ${../glossary/thread:/term}
+  is a task which the test creates but does not start, since its identifier is
+  all which the function needs.
+
+  Where RTEMS is built with the build option `RTEMS_DEBUG` enabled, the function
+  also checks that each identifier references an existing
+  ${../glossary/thread:/term}. For valid identifiers, this check gives the same
+  result.
+requirement-type: functional
+skip-reasons: {}
+test-action: |
+  ctx->status = pthread_equal( ctx->t1, ctx->t2 );
+test-brief: null
+test-cleanup: null
+test-context:
+- brief: |
+    This member specifies the ${../if/equal:/params[0]/name} parameter value.
+  description: null
+  member: |
+    pthread_t t1
+- brief: |
+    This member specifies the ${../if/equal:/params[1]/name} parameter value.
+  description: null
+  member: |
+    pthread_t t2
+- brief: |
+    This member contains the identifier of the thread other than the thread
+    identified by the ${../if/equal:/params[0]/name} parameter.
+  description: null
+  member: |
+    pthread_t other
+- brief: |
+    This member contains the return value of the ${../if/equal:/name} call.
+  description: null
+  member: |
+    int status
+- brief: |
+    This member contains the identifier of the worker task.
+  description: null
+  member: |
+    rtems_id worker_id
+test-context-support: null
+test-description: null
+test-header: null
+test-includes:
+- pthread.h
+- rtems.h
+test-local-includes:
+- tx-support.h
+test-prepare: null
+test-setup:
+  brief: null
+  code: |
+    ctx->worker_id = CreateTask( "WORK", PRIO_HIGH );
+  description: null
+test-stop: null
+test-support: null
+test-target: testsuites/validation/tc-pthread-equal.c
+test-teardown:
+  brief: null
+  code: |
+    DeleteTask( ctx->worker_id );
+  description: null
+text: |
+  ${.:text-template}
+transition-map:
+- enabled-by: true
+  post-conditions:
+    Status:
+    - if:
+        pre-conditions:
+          T2: Same
+      then: NonZero
+    - else: Zero
+  pre-conditions:
+    T1: all
+    T2: all
+type: requirement
