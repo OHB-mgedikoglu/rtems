@@ -762,7 +762,6 @@ source:
 - cpukit/posix/src/pthreadconcurrency.c
 - cpukit/posix/src/pthreadconfig.c
 - cpukit/posix/src/pthreadcreate.c
-- cpukit/posix/src/pthreadequal.c
 - cpukit/posix/src/pthreadgetaffinitynp.c
 - cpukit/posix/src/pthreadgetattrnp.c
 - cpukit/posix/src/pthreadgetschedparam.c

@@ -429,6 +429,7 @@ source:
 - cpukit/posix/src/pthreadattrsetstackaddr.c
 - cpukit/posix/src/pthreadattrsetstacksize.c
 - cpukit/posix/src/pthreaddetach.c
+- cpukit/posix/src/pthreadequal.c
 - cpukit/posix/src/pthreadexit.c
 - cpukit/posix/src/pthreadgetcpuclockid.c
 - cpukit/posix/src/pthreadgetnamenp.c
