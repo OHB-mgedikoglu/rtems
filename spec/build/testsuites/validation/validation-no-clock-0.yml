@@ -106,6 +106,7 @@ source:
 - testsuites/validation/tc-pthread-condattr-setclock.c
 - testsuites/validation/tc-pthread-condattr-setpshared.c
 - testsuites/validation/tc-pthread-detach.c
+- testsuites/validation/tc-pthread-equal.c
 - testsuites/validation/tc-pthread-exit.c
 - testsuites/validation/tc-pthread-getcpuclockid.c
 - testsuites/validation/tc-pthread-getname-np.c
