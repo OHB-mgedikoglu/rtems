@@ -1,0 +1,106 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+copyrights:
+- Copyright (C) 2026 OHB System AG
+- Copyright (C) 2026 embedded brains GmbH & Co. KG
+enabled-by: true
+links: []
+test-actions:
+- action-brief: |
+    Call ${../if/self:/name} in the runner task.
+  action-code: |
+    pthread_t id;
+
+    id = pthread_self();
+  checks:
+  - brief: |
+      Check that the returned value is equal to the identifier of the runner task.
+    code: |
+      T_eq_u32( id, ctx->runner_id );
+    links: []
+  links:
+  - role: validation
+    uid: ../req/self
+- action-brief: |
+    Let the worker task call ${../if/self:/name}.
+  action-code: |
+    ctx->worker_retval = (pthread_t) -1;
+    SendEvents( ctx->worker_id, RTEMS_EVENT_0 );
+  checks:
+  - brief: |
+      Check that the returned value is equal to the identifier of the worker task.
+    code: |
+      T_eq_u32( ctx->worker_retval, ctx->worker_id );
+    links: []
+  links:
+  - role: validation
+    uid: ../req/self
+test-brief: |
+  Tests the ${../if/self:/name} function.
+test-context:
+- brief: |
+    This member contains the identifier of the runner task.
+  description: null
+  member: |
+    rtems_id runner_id
+- brief: |
+    This member contains the identifier of the worker task.
+  description: null
+  member: |
+    rtems_id worker_id
+- brief: |
+    This member contains the return value of the ${../if/self:/name} call in the
+    worker task.
+  description: null
+  member: |
+    pthread_t worker_retval
+test-context-support: null
+test-description: |
+  The test takes the expected identifiers from the creation of the worker task
+  and from the identification of the running task, not from ${../if/self:/name}.
+test-header: null
+test-includes:
+- pthread.h
+- rtems.h
+test-local-includes:
+- tx-support.h
+test-setup:
+  brief: null
+  code: |
+    rtems_status_code sc;
+
+    SetSelfPriority( PRIO_NORMAL );
+    SetSelfAffinityOne( 0 );
+    sc = rtems_task_ident(
+      RTEMS_WHO_AM_I,
+      RTEMS_SEARCH_ALL_NODES,
+      &ctx->runner_id
+    );
+    T_rsc_success( sc );
+    ctx->worker_id = CreateTask( "WORK", PRIO_HIGH );
+    SetAffinityOne( ctx->worker_id, 0 );
+    StartTask( ctx->worker_id, Worker, ctx );
+  description: null
+test-stop: null
+test-support: |
+  typedef ${.:/test-context-type} Context;
+
+  static void Worker( rtems_task_argument arg )
+  {
+    Context *ctx;
+
+    ctx = (Context *) arg;
+
+    while ( true ) {
+      (void) ReceiveAnyEvents();
+      ctx->worker_retval = pthread_self();
+    }
+  }
+test-target: testsuites/validation/tc-pthread-self.c
+test-teardown:
+  brief: null
+  code: |
+    DeleteTask( ctx->worker_id );
+    SetSelfAffinityAll();
+    RestoreRunnerPriority();
+  description: null
+type: test-case

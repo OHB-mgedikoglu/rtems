@@ -1,0 +1,22 @@
+SPDX-License-Identifier: CC-BY-SA-4.0 OR BSD-2-Clause
+copyrights:
+- Copyright (C) 2026 OHB System AG
+- Copyright (C) 2026 embedded brains GmbH & Co. KG
+enabled-by: true
+functional-type: function
+links:
+- role: interface-function
+  uid: ../if/self
+- role: requirement-refinement
+  uid: ../../req/group-posix-api
+- role: reference
+  uid: /ref/std/posix-2024/pthread-self
+rationale: |
+  ${/ref/std/posix-2024/pthread-self:/name} specifies ${../if/self:/name}. The
+  standard states that the function returns the identifier of the calling thread
+  and that it defines no error.
+requirement-type: functional
+text: |
+  The ${../if/self:/name} function shall return the identifier of the calling
+  ${../glossary/thread:/term}.
+type: requirement
